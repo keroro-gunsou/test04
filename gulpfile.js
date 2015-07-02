@@ -7,6 +7,7 @@ var imagemin = require('gulp-imagemin');
 var pngquant = require('imagemin-pngquant');
 var csso = require('gulp-csso');
 var clean = require('gulp-clean');
+var frontnote = require("gulp-frontnote");
 var runSequence = require('run-sequence');
 var browserSync = require('browser-sync');
 var watch = require('gulp-watch');
@@ -21,11 +22,18 @@ gulp.task('sass', function() {
     }))
         .pipe(gulp.dest('./dist/css'));
 });
+gulp.task('doc', function() {
+    gulp.src('./dist/css/**/*.css')
+        .pipe(frontnote({
+          css:'../dist/css/style.css'
+        }))
+});
 gulp.task('csscomb', function () {
     return gulp.src('./dist/css/*css')
     .pipe(csscomb())
     .pipe(gulp.dest('./dist/sortcss/'))
 });
+
 //gulp.task('imagemin', function () {
 //    gulp.src('_src/{,**/}*.{png,jpg,gif,svg}' ) // 読み込みファイル
 //    .pipe(imagemin())
@@ -58,12 +66,13 @@ gulp.task('bs-reload', function () {
 gulp.task('watch', function() {
     gulp.watch("_src/sass**/*.scss",["sass"]);
     gulp.watch("./dist/css/*css",["csscomb"]);
+    gulp.watch("./dist/css/*css",["doc"]);
     gulp.watch("./dist/sortcss/*css",["csso"]);
     gulp.watch("./dist/css/*css",['bs-reload']);
 });
 gulp.task('default', [
-    'watch',
-    'browser-sync'
+    'watch'
+    //,'browser-sync'
 ]);
 // 不要なファイルを削除する
 // distフォルダ内を一度全て削除する
